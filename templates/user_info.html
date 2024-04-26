@@ -1,0 +1,13 @@
+{% extends 'base.html' %} {% block title %}User Info Page{% endblock %} {% block
+content %}
+
+<h2>User Info Page!</h2>
+
+<p>{{user.username}}</p>
+<p>{{user.email}}</p>
+<p>{{user.first_name}}</p>
+<p>{{user.last_name}}</p>
+
+<a href="{{ url_for('logout') }}"><button>Log out</button></a>
+
+{% endblock %}

@@ -1,7 +1,20 @@
-{% extends 'base.html' %} {% block title %}My awesome page title{% endblock %}
+{% extends 'base.html' %} {% block title %}User Regstration Page{% endblock %}
 {% block content %}
 
-<h2>I'm a header!</h2>
-<p>I'm a paragraph!</p>
+<h2>User Regstration Page</h2>
+
+<form id="user-registration" method="POST">
+  {{ form.hidden_tag() }} {% for field in form if field.widget.input_type !=
+  'hidden' %}
+
+  <p>
+    {{ field.label }} {{ field }} {% for error in field.errors %} {{ error }} {%
+    endfor %}
+  </p>
+
+  {% endfor %}
+
+  <button type="submit">Submit</button>
+</form>
 
 {% endblock %}

@@ -1,6 +1,6 @@
 """Models for Authentication app."""
 from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
+from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 
 
 db = SQLAlchemy()
@@ -26,16 +26,24 @@ class User(db.Model):
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
 
+    # @classmethod
+    # def register(cls, username, password):
+    #     """Register user w/hashed password & return user."""
+
+    #     hashed = bcrypt.generate_password_hash(password)
+    #     # turn bytestring into normal (unicode utf8) string
+    #     hashed_utf8 = hashed.decode("utf8")
+
+    #     # return instance of user w/username and hashed pwd
+    #     return cls(username=username, password=hashed_utf8)
+    
+    @classmethod
     def register(cls, username, password):
         """Register user w/hashed password & return user."""
-
-        hashed = bcrypt.generate_password_hash(password)
-        # turn bytestring into normal (unicode utf8) string
-        hashed_utf8 = hashed.decode("utf8")
-
-        # return instance of user w/username and hashed pwd
-        return cls(username=username, password=hashed_utf8)
+        hashed_password = generate_password_hash(password).decode('utf-8')
+        return cls(username=username, password=hashed_password)
     
+    @classmethod
     def authenticate(cls, username, password):
         """Validate that user exists & password is correct.
 
@@ -44,7 +52,7 @@ class User(db.Model):
 
         user = User.query.filter_by(username=username).first()
 
-        if user and bcrypt.check_password_hash(user.password, password):
+        if user and check_password_hash(user.password, password):
             # return user instance
             return user
         else:

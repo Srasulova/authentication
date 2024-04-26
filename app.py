@@ -23,7 +23,8 @@ with app.app_context():
 
 @app.route('/')
 def show_home_page():
-   return redirect(url_for('register_page'))
+   return render_template("base.html")
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
@@ -37,11 +38,14 @@ def register_page():
       last_name = form.last_name.data
 
       # Check if the username already exists
-      if User.query.filter(username = username):
+      if User.query.filter_by(username=username).first():
          flash("User already exists. Choose another username!")
          return redirect(url_for('register_page'))
       
-      new_user = User(username, password, email, first_name, last_name)
+      new_user = User.register(username=username, password=password)
+      new_user.email = email
+      new_user.first_name = first_name
+      new_user.last_name = last_name
       db.session.add(new_user)
       db.session.commit()
 
@@ -64,18 +68,32 @@ def login_page():
       if user:
          session["username"] = username
          flash("Login is successfull!", "success")
-         return redirect(url_for('secret_page'))
+         return redirect(url_for('user_page', username=username))
+         
       
       flash("Invalid username or password. Please try again", "danger")
+      print(password)
 
    return render_template("login.html", form = form)
 
 
-@app.route("/secret")
-def secret_page():
-   if 'username' not in session:
+@app.route("/users/<username>")
+def user_page(username):
+   if 'username' not in session or session["username"] != username :
       flash("You need to login first!", "warning")
       return redirect(url_for('login_page'))
    
-   return render_template("secret.html")
+   user = User.query.filter_by(username=username).first()
+
+   if not user:
+      flash("User not found!", "danger")
+      return redirect(url_for('login_page'))
+   
+   return render_template("user_info.html", user=user)
     
+
+@app.route("/logout")
+def logout():
+   session.pop('username', None)
+   flash("You've been logged out!", "info")
+   return redirect(url_for('login_page'))

@@ -8,7 +8,24 @@
     </title>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    {% block content %}BODY CONTENT GOES HERE{% endblock %}
+    {% block messages %} {% with messages = get_flashed_messages() %} {% if
+    messages %}
+    <ul class="flash-messages">
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% endwith %} {% endblock %} {% block content %}
+    <h1>Welcome to Our Website!</h1>
+
+    <p>First time visiting? Proceed with Registration form</p>
+    <a href="{{ url_for('register_page') }}">
+      <button>Register</button>
+    </a>
+    <p>Already a User? Proceed with Login</p>
+    <a href="{{ url_for('login_page') }}">
+      <button>Login</button>
+    </a>
+    {% endblock %}
   </body>
 </html>
